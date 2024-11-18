@@ -38,7 +38,7 @@ function Dashboard() {
   return (
     <div className="flex min-h-screen bg-gradient-to-r from-white to-white">
       {/* Sidebar */}
-      <div className="w-64 bg-gradient-to-r from-slate-950 to-slate-900 text-white p-6">
+      <div className="w-64 bg-gradient-to-r from-slate-950 to-slate-900 text-white p-6 ">
         <h2 className="text-2xl font-bold mb-8 ">Panel de control</h2>
         <ul>
           {/* Opciones del menú */}

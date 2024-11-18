@@ -150,7 +150,7 @@ function Dashboard() {
 
             <div className="my-7">
               <img
-                src="https://cdn.discordapp.com/attachments/1113261514669969428/1307560779150790656/gtaonline-the-chop-shop-dlc-artwork-1600.png?ex=673ac05f&is=67396edf&hm=cbfd6275cc9e4f4f5f92c815e80470c553cfb68ac57ca8c768b30f68e0108664&"
+                 src="/img/jugadores_3.png"
                 alt="Imagen de GTA V"
                 className="w-50 h-auto object-contain"
               />
@@ -173,7 +173,7 @@ function Dashboard() {
 
             <div className="my-7">
               <img
-                src="https://cdn.discordapp.com/attachments/1113261514669969428/1307560779150790656/gtaonline-the-chop-shop-dlc-artwork-1600.png?ex=673ac05f&is=67396edf&hm=cbfd6275cc9e4f4f5f92c815e80470c553cfb68ac57ca8c768b30f68e0108664&"
+                src="/img/jugadores_3.png"
                 alt="Imagen de GTA V"
                 className="w-50 h-auto object-contain"
               />

@@ -114,6 +114,10 @@ app.post("/api/crear-administrador", (req, res) => {
   });
 });
 
+app.post('/mostrar_datos_admin', (req, res) => {
+  // Lógica del servidor aquí
+});
+
 // Iniciar el servidor
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
