@@ -1,23 +1,23 @@
 import React, { useState } from "react";
-import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai"; // Para el icono del ojo
-import { useNavigate } from "react-router-dom"; // Importa useNavigate para la redirección
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 function CrearAdministrador() {
   const [nombre, setNombre] = useState("");
   const [usuario, setUsuario] = useState("");
   const [contraseña, setContraseña] = useState("");
-  const [confirmarContraseña, setConfirmarContraseña] = useState(""); // Nuevo estado para confirmar la contraseña
+  const [confirmarContraseña, setConfirmarContraseña] = useState("");
   const [email, setEmail] = useState("");
   const [grupo, setGrupo] = useState("");
   const [activo, setActivo] = useState(true);
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
-  const [mostrarContraseña, setMostrarContraseña] = useState(false); // Estado para mostrar/ocultar la contraseña
+  const [mostrarContraseña, setMostrarContraseña] = useState(false);
   const [mostrarConfirmarContraseña, setMostrarConfirmarContraseña] =
-    useState(false); // Estado para mostrar/ocultar la confirmar contraseña
-  const [crearOtro, setCrearOtro] = useState(false); // Estado para mostrar la pregunta de crear otro administrador
+    useState(false);
+  const [crearOtro, setCrearOtro] = useState(false);
 
-  const navigate = useNavigate(); // Hook para redirección
+  const navigate = useNavigate();
   const handleUserManagement = () => {
     navigate("/gestion-usuarios");
   };
@@ -28,7 +28,6 @@ function CrearAdministrador() {
     setMensaje("");
     setCrearOtro(false);
 
-    // Verifica que todas las contraseñas coincidan
     if (
       !nombre ||
       !usuario ||
@@ -62,19 +61,13 @@ function CrearAdministrador() {
 
       const result = await response.json();
       if (response.ok) {
-        // Mostrar mensaje de éxito con los datos del usuario y contraseña
         setMensaje(
           <>
             Administrador creado con éxito.<br />
             Usuario: {usuario}, Contraseña: {contraseña}
           </>
         );
-        
-
-        // Preguntar si quiere crear otro administrador
         setCrearOtro(true);
-
-        // Limpiar los campos del formulario
         setNombre("");
         setUsuario("");
         setContraseña("");
@@ -92,24 +85,21 @@ function CrearAdministrador() {
   };
 
   const handleCrearOtro = () => {
-    setCrearOtro(false); // Ocultar la pregunta de crear otro
+    setCrearOtro(false);
   };
 
   const handleRedirigir = () => {
-    setCrearOtro(false); // Ocultar la pregunta de crear otro
-    navigate("/index_admin"); // Redirigir a la página de administración
+    setCrearOtro(false);
+    navigate("/index_admin");
   };
 
   return (
-    <div className="min-h-screen flex   bg-slate-950">
-      {/* Imagen insertada */}
-
-      <div className="w-[500px]  p-2 rounded-lg mt-48 ml-56 z-10">
+    <div className="min-h-screen flex bg-slate-950">
+      <div className="w-full max-w-md p-6 rounded-lg mt-20 mx-auto z-10">
         <h2 className="w-auto text-2xl text-emerald-500 font-bold text-center mb-4">
-        REGISTRO DE NUEVO STAFF
+          REGISTRO DE NUEVO STAFF
         </h2>
         {mensaje && (
-          
           <div className="bg-white font-semibold text-center text-slate-950 p-2 mb-4 rounded">
             {mensaje}
             {crearOtro && (
@@ -256,7 +246,7 @@ function CrearAdministrador() {
       <img
         src="/img/login_2.png"
         alt="Imagen de fondo"
-        className="absolute inset-0 w-full h-full object-cover z-0 "
+        className="w-full object-cover opacity-25 absolute top-0 left-0 h-full z-0"
       />
     </div>
   );

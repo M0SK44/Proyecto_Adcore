@@ -15,16 +15,16 @@ function App() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
+  
     if (!usuario || !password) {
       setError("Usuario y contraseña son obligatorios");
       setLoading(false);
       return;
     }
-
+  
     try {
       console.log("Enviando datos:", { usuario, password });
-
+  
       const response = await fetch("http://localhost:3002/login", {
         method: "POST",
         headers: {
@@ -32,31 +32,34 @@ function App() {
         },
         body: JSON.stringify({ usuario, password }),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         console.log("Respuesta del servidor:", data);
-
+  
         setSuccess(true); // Mostrar la notificación de éxito
+  
+        // Comprobar el grupo del usuario para redirigir a la página correcta
         setTimeout(() => {
-          navigate("/index_admin"); // Navegar después de un breve tiempo
+          if (data.user.grupo === "admin") {
+            navigate("/index_admin"); // Redirigir a index_admin si es admin
+          } else if (data.user.grupo === "mod") {
+            navigate("/index_mod"); // Redirigir a index_mod si es mod
+          }
         }, 500);
       } else {
         const data = await response.json();
         console.error("Error en la respuesta del servidor:", data);
         setError(data.message || "Usuario o contraseña incorrectos");
-       
       }
     } catch (err) {
       console.error("Error al conectar al servidor:", err);
-      setError(
-        "Hubo un error al conectar con el servidor. Intenta nuevamente."
-      );
+      setError("Hubo un error al conectar con el servidor. Intenta nuevamente.");
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-slate-950 to-slate-900">
       

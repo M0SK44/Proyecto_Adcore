@@ -5,8 +5,8 @@ function Dashboard() {
   const navigate = useNavigate();
 
   // Funciones para navegar entre las diferentes secciones
-  const handlePlayers = () => {
-    navigate("/index_admin");
+  const handlePlayersmod = () => {
+    navigate("/index_mod");
   };
   const handleJugadores = () => {
     navigate("/Jugadores");
@@ -17,18 +17,6 @@ function Dashboard() {
 
   const handleMoreOptions = () => {
     navigate("/mas-opciones");
-  };
-
-  const handleUserManagement = () => {
-    navigate("/gestion-usuarios");
-  };
-
-  const handleServerSettings = () => {
-    navigate("/configuraciones");
-  };
-
-  const handleReports = () => {
-    navigate("/reportes");
   };
 
   const handleExit = () => {
@@ -45,7 +33,7 @@ function Dashboard() {
           {/* Opciones del menú */}
           <li className="mb-6 w-64 rounded-full bg-white ">
             <button
-              onClick={handlePlayers}
+              onClick={handlePlayersmod}
               className="w-full text-left p-3 text-emerald-500 rounded-lg focus:outline-none flex items-center"
             >
               <svg
@@ -67,33 +55,10 @@ function Dashboard() {
           </li>
 
           {/* Menú de Admin */}
-          <li className="mt-8">
-            <h3 className="text-2xl font-bold mb-8 font-semibold text-white mb-3">
-              Administración
-            </h3>
+          <li className="mt-4">
+           
             <ul>
-              <li className="mb-4">
-                <button
-                  onClick={handleUserManagement}
-                  className="w-full text-left p-3 text-cyan-500 rounded-lg focus:outline-none flex items-center"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    className="h-5 w-5 mr-3"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M15 12c0-3.313-2.687-6-6-6s-6 2.687-6 6m12 0v6m0-6h3m-3 0l3-3m-3 3l-3 3"
-                    />
-                  </svg>
-                  Gestión de staffs
-                </button>
-              </li>
+             
 
               <li className="mb-4">
                 <button
@@ -228,16 +193,6 @@ function Dashboard() {
               </dl>
             </div>
           </div>
-          {/*Termino de la información*/}
-       
-               
-           
-
-            
-            
-           
-            
-         
         </div>
       </div>
     </div>

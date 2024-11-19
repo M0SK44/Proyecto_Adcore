@@ -61,7 +61,7 @@ app.post("/login", (req, res) => {
         return res.status(400).json({ message: "Usuario o contraseña incorrectos" });
       }
 
-      // Si la contraseña es correcta, enviar respuesta exitosa
+      // Si la contraseña es correcta, enviar respuesta exitosa con el grupo
       res.json({
         message: "Inicio de sesión exitoso",
         user: {
@@ -69,13 +69,14 @@ app.post("/login", (req, res) => {
           nombre: user.nombre,
           usuario: user.usuario,
           mail: user.mail,
-          grupo: user.grupo,
+          grupo: user.grupo,  // Enviar el grupo del usuario
           activo: user.activo
         }
       });
     });
   });
 });
+
 
 // Ruta para crear un administrador
 app.post("/api/crear-administrador", (req, res) => {
