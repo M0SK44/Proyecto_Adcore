@@ -59,6 +59,7 @@ function App() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-slate-950 to-slate-900">
+      
       <img
         src="/img/fondologin2.png"
         alt="Imagen de fondo"

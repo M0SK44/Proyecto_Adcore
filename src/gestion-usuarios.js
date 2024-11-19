@@ -14,7 +14,7 @@ function Dashboard() {
   };
 
   const handleCrearAdministrador = () => {
-    navigate("/crear_administrador");
+    navigate("/crear_admin");
   };
   const handleGestionAdministrador = () => {
     navigate("/Gestion_administrador");

@@ -40,6 +40,7 @@ function Dashboard() {
       {/* Sidebar */}
       <div className="w-64 bg-gradient-to-r from-slate-950 to-slate-900 text-white p-6 ">
         <h2 className="text-2xl font-bold mb-8 ">Panel de control</h2>
+        
         <ul>
           {/* Opciones del menú */}
           <li className="mb-6 w-64 rounded-full bg-white ">
@@ -227,6 +228,7 @@ function Dashboard() {
               </dl>
             </div>
           </div>
+          
         </div>
       </div>
     </div>

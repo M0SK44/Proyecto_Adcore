@@ -18,6 +18,9 @@ function CrearAdministrador() {
   const [crearOtro, setCrearOtro] = useState(false); // Estado para mostrar la pregunta de crear otro administrador
 
   const navigate = useNavigate(); // Hook para redirección
+  const handleUserManagement = () => {
+    navigate("/gestion-usuarios");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -94,17 +97,12 @@ function CrearAdministrador() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950">
+    <div className="min-h-screen flex   bg-slate-950">
       {/* Imagen insertada */}
-      <img
-        src="https://cdn.discordapp.com/attachments/1113261514669969428/1307562416271523881/gtaonline-after-hours-the-black-madonna-artwork-png-8662-1600.png?ex=673ac1e5&is=67397065&hm=4d8a86a868b2a3c9bef210227d725444f0a8eacba359e10bdeae995cfeee4944&"
-        alt="Trevor Philips"
-        className="w-[92.5%] h-[auto] max-w-none object-contain absolute top-[-5%] left-[-40%] transform translate-x-[50px] translate-y-[30px]"
-      />
 
-      <div className="max-w-md mx-auto p-4 bg-white shadow-md rounded-lg relative">
-        <h2 className="text-2xl font-bold text-center mb-4">
-          Menu de nuevos administradores
+      <div className="w-[500px]  p-2 rounded-lg mt-48 ml-56 z-10">
+        <h2 className="w-auto text-2xl text-emerald-500 font-bold text-center mb-4">
+        REGISTRO DE NUEVO STAFF
         </h2>
         {mensaje && (
           <div className="bg-green-100 text-green-800 p-2 mb-4 rounded">
@@ -137,7 +135,9 @@ function CrearAdministrador() {
         {!crearOtro && (
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Nombre:</label>
+              <label className="block text-sm text-white font-medium mb-1">
+                Nombre:
+              </label>
               <input
                 type="text"
                 value={nombre}
@@ -146,7 +146,9 @@ function CrearAdministrador() {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Usuario:</label>
+              <label className="block text-sm text-white font-medium mb-1">
+                Usuario:
+              </label>
               <input
                 type="text"
                 value={usuario}
@@ -155,7 +157,7 @@ function CrearAdministrador() {
               />
             </div>
             <div className="mb-4 relative">
-              <label className="block text-sm font-medium mb-1">
+              <label className="text-white block text-sm font-medium mb-1">
                 Contraseña:
               </label>
               <input
@@ -172,7 +174,7 @@ function CrearAdministrador() {
               </span>
             </div>
             <div className="mb-4 relative">
-              <label className="block text-sm font-medium mb-1">
+              <label className="text-white block text-sm font-medium mb-1">
                 Vuelve a poner la contraseña:
               </label>
               <input
@@ -195,7 +197,9 @@ function CrearAdministrador() {
               </span>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Email:</label>
+              <label className="text-white block text-sm font-medium mb-1">
+                Email:
+              </label>
               <input
                 type="email"
                 value={email}
@@ -204,7 +208,9 @@ function CrearAdministrador() {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Grupo:</label>
+              <label className="text-white block text-sm font-medium mb-1">
+                Grupo:
+              </label>
               <select
                 value={grupo}
                 onChange={(e) => setGrupo(e.target.value)}
@@ -222,17 +228,31 @@ function CrearAdministrador() {
                 onChange={() => setActivo(!activo)}
                 className="mr-2"
               />
-              <label className="text-sm">Activo</label>
+              <label className="text-white text-sm">Activo</label>
             </div>
-            <button
-              type="submit"
-              className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Crear Administrador
-            </button>
+            <div className="flex justify-between">
+              <button
+                type="button"
+                onClick={handleUserManagement}
+                className="w-auto py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Volver
+              </button>
+              <button
+                type="submit"
+                className="w-auto py-2 px-4 bg-emerald-500 text-white rounded hover:bg-emerald-600"
+              >
+                Crear Administrador
+              </button>
+            </div>
           </form>
         )}
       </div>
+      <img
+        src="/img/login_2.png"
+        alt="Imagen de fondo"
+        className="absolute inset-0 w-full h-full object-cover z-0 "
+      />
     </div>
   );
 }

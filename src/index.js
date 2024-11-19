@@ -9,6 +9,7 @@ import Jugadores from './jugadores';  // Gestión de jugadores
 import Vehiculos from './vehiculos';  // Gestión de vehículos
 import Gestion_administradorr from './gestion_administrador';  // Gestión de administrador
 import Crear_administrador from './crear_administrador'; 
+import Crear_admin from './crear_admin'; 
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -24,6 +25,8 @@ root.render(
         <Route path="/vehiculos" element={<Vehiculos />} />  {/* Página de gestión de vehículos */}
         <Route path="/gestion_administrador" element={<Gestion_administradorr />} />  {/* Página de gestión de administrador */}
         <Route path="/crear_administrador" element={<Crear_administrador/>} />  {/* Página de gestión de administrador */}
+        <Route path="/crear_admin" element={<Crear_admin/>} />  {/* Página de gestión de administrador */}
+      
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
