@@ -64,8 +64,12 @@ function CrearAdministrador() {
       if (response.ok) {
         // Mostrar mensaje de éxito con los datos del usuario y contraseña
         setMensaje(
-          `Administrador creado con éxito. Usuario: ${usuario}, Contraseña: ${contraseña}`
+          <>
+            Administrador creado con éxito.<br />
+            Usuario: {usuario}, Contraseña: {contraseña}
+          </>
         );
+        
 
         // Preguntar si quiere crear otro administrador
         setCrearOtro(true);
@@ -105,14 +109,15 @@ function CrearAdministrador() {
         REGISTRO DE NUEVO STAFF
         </h2>
         {mensaje && (
-          <div className="bg-green-100 text-green-800 p-2 mb-4 rounded">
+          
+          <div className="bg-white font-semibold text-center text-slate-950 p-2 mb-4 rounded">
             {mensaje}
             {crearOtro && (
               <div className="mt-4 text-center">
                 <p className="mb-2">¿Deseas crear otro administrador?</p>
                 <button
                   onClick={handleCrearOtro}
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mr-2"
+                  className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600 mr-2"
                 >
                   Sí
                 </button>
