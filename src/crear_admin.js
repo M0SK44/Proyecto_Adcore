@@ -212,6 +212,7 @@ function CrearAdministrador() {
                 className="w-full px-3 py-2 border border-gray-300 rounded"
               >
                 <option value="">Selecciona un grupo</option>
+                <option value="helper">Helper (Solo podra visualizar datos de usuario)</option>
                 <option value="mod">Mod (Gestiona solo usuarios)</option>
                 <option value="admin">Admin (Todos los privilegios)</option>
               </select>

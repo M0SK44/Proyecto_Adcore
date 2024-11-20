@@ -45,6 +45,8 @@ function App() {
             navigate("/index_admin"); // Redirigir a index_admin si es admin
           } else if (data.user.grupo === "mod") {
             navigate("/index_mod"); // Redirigir a index_mod si es mod
+          } else if (data.user.grupo === "helper") {
+            navigate("/index_helper");
           }
         }, 500);
       } else {
