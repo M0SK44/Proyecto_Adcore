@@ -63,7 +63,7 @@ function CrearAdministrador() {
       if (response.ok) {
         setMensaje(
           <>
-            Administrador creado con éxito.<br />
+            Administrador creado con éxito!.<br />
             Usuario: {usuario}, Contraseña: {contraseña}
           </>
         );
