@@ -153,10 +153,10 @@ function JugadoresHelper() {
                     Trabajo
                   </th>
                   <th className="px-6 py-3 text-sm font-medium text-gray-500">
-                    Grado
+                    Grado de trabajo
                   </th>
                   <th className="px-6 py-3 text-sm font-medium text-gray-500">
-                    Grupo
+                    Grupo de admin
                   </th>
                   
                 </tr>

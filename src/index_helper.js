@@ -12,7 +12,7 @@ function Dashboard() {
     navigate("/index_helper");
   };
   const handleJugadoresHelper = () => {
-    navigate("/Jugadores");
+    navigate("/Jugadores_helper");
   };
   const handleVehiclesHelper = () => {
     navigate("/vehiculos_helper");
