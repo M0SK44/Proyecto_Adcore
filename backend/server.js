@@ -164,28 +164,47 @@ app.delete("/api/administradores/:id", (req, res) => {
 
 app.put("/api/administradores/:id", (req, res) => {
   const { id } = req.params;
-  const { nombre, usuario, email, grupo, activo } = req.body;
+  const { nombre, usuario, contraseña, mail, grupo, activo } = req.body;
 
-  // Validar los campos requeridos
-  if (!nombre || !usuario || !email || !grupo) {
-    return res.status(400).json({ message: "Todos los campos son obligatorios excepto la contraseña" });
-  }
-
-  // Asegúrate de que 'activo' sea 1 o 0
-  if (activo !== 1 && activo !== 0) {
-    return res.status(400).json({ message: "El campo 'activo' debe ser 1 o 0" });
-  }
-
-  // Realizar la actualización en la base de datos
-  db.query('UPDATE administradores SET nombre = ?, usuario = ?, email = ?, grupo = ?, activo = ? WHERE id = ?', 
-    [nombre, usuario, email, grupo, activo, id], 
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ message: "Error en la base de datos" });
-      }
-      res.status(200).json({ message: "Administrador actualizado correctamente" });
+  // Validar campos obligatorios
+  if (!nombre || !usuario || !grupo) {
+    return res.status(400).json({
+      message: "Los campos 'nombre', 'usuario' y 'grupo' son obligatorios",
     });
+  }
+
+  // Normalizar el estado de 'activo'
+  const estadoActivo = activo === "1" || activo === 1 ? 1 : 0;
+
+  // Construir la consulta para actualizar la tabla
+  let query = "UPDATE administradores SET nombre = ?, usuario = ?, mail = ?, grupo = ?, activo = ?";
+  const params = [nombre, usuario, mail, grupo, estadoActivo];
+
+  // Incluir contraseña si se proporciona
+  if (contraseña) {
+    query += ", contraseña = ?";
+    const hashedPassword = bcrypt.hashSync(contraseña, 10); // Encripta la contraseña
+    params.push(hashedPassword);
+  }
+
+  query += " WHERE id = ?";
+  params.push(id);
+
+  // Ejecutar la consulta
+  db.query(query, params, (err, result) => {
+    if (err) {
+      console.error("Error al actualizar administrador:", err);
+      return res.status(500).json({ message: "Error en la base de datos" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "No se encontró el administrador con el ID especificado" });
+    }
+
+    res.status(200).json({ message: "Administrador actualizado correctamente" });
+  });
 });
+
 
 
 
