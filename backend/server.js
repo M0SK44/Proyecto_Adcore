@@ -8,6 +8,7 @@ const port = 3002;
 // Configuración de CORS para permitir solicitudes desde el frontend
 app.use(cors());
 
+
 // Parseo de cuerpo JSON en las solicitudes
 app.use(express.json());
 
@@ -118,6 +119,76 @@ app.post("/api/crear-administrador", (req, res) => {
 app.post('/mostrar_datos_admin', (req, res) => {
   // Lógica del servidor aquí
 });
+
+app.get('/api/administradores', (req, res) => {
+  console.log("Solicitud recibida para obtener los administradores.");
+  db.query('SELECT * FROM administradores', (err, results) => {
+    if (err) {
+      console.error('Error en la consulta:', err);
+      res.status(500).send('Error al consultar la base de datos');
+      return;
+    }
+    console.log("Datos obtenidos:", results);
+    res.json(results); // Envía los resultados de la consulta como respuesta
+  });
+});
+
+
+app.delete("/api/administradores/:id", (req, res) => {
+  const { id } = req.params; // Obtener el ID desde la URL
+
+  // Verificar que el ID sea válido
+  if (!id) {
+    return res.status(400).json({ message: "ID no proporcionado" });
+  }
+
+  // Preparar la consulta SQL para eliminar el administrador
+  const query = "DELETE FROM administradores WHERE id = ?";
+
+  // Ejecutar la consulta
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error("Error al eliminar el administrador:", err);
+      return res.status(500).json({ message: "Error al eliminar el administrador" });
+    }
+
+    // Si no se encuentra el administrador con el ID proporcionado
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Administrador no encontrado" });
+    }
+
+    // Responder con éxito
+    res.status(200).json({ message: "Administrador eliminado correctamente" });
+  });
+});
+
+app.put("/api/administradores/:id", (req, res) => {
+  const { id } = req.params;
+  const { nombre, usuario, email, grupo, activo } = req.body;
+
+  // Validar los campos requeridos
+  if (!nombre || !usuario || !email || !grupo) {
+    return res.status(400).json({ message: "Todos los campos son obligatorios excepto la contraseña" });
+  }
+
+  // Asegúrate de que 'activo' sea 1 o 0
+  if (activo !== 1 && activo !== 0) {
+    return res.status(400).json({ message: "El campo 'activo' debe ser 1 o 0" });
+  }
+
+  // Realizar la actualización en la base de datos
+  db.query('UPDATE administradores SET nombre = ?, usuario = ?, email = ?, grupo = ?, activo = ? WHERE id = ?', 
+    [nombre, usuario, email, grupo, activo, id], 
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: "Error en la base de datos" });
+      }
+      res.status(200).json({ message: "Administrador actualizado correctamente" });
+    });
+});
+
+
+
 
 // Iniciar el servidor
 app.listen(port, () => {
