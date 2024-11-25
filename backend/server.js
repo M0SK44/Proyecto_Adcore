@@ -205,6 +205,68 @@ app.put("/api/administradores/:id", (req, res) => {
   });
 });
 
+// Definición de la ruta para obtener los usuarios jugadores
+app.get("/api/users", (req, res) => {
+  console.log("Solicitud recibida para obtener los usuarios.");
+  db.query('SELECT * FROM users', (err, results) => {
+    if (err) {
+      console.error('Error en la consulta:', err);
+      res.status(500).send('Error al consultar la base de datos');
+      return;
+    }
+    //console.log("Datos obtenidos:", results);
+    res.json(results);  // Responde con los datos obtenidos de la base de datos
+  });
+});
+
+// Ruta para eliminar un usuario jugador
+app.delete("/api/users/:id", (req, res) => {
+  const userId = req.params.id; // Obtener el id del usuario desde la URL
+
+  // SQL para eliminar al usuario por su id
+  const query = "DELETE FROM users WHERE id = ?";
+  
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+
+    // Verificar si el usuario fue eliminado correctamente
+    if (results.affectedRows > 0) {
+      res.status(200).json({ message: "Usuario eliminado correctamente." });
+    } else {
+      res.status(404).json({ message: "Usuario no encontrado." });
+    }
+  });
+});
+
+// Ruta para actualizar un usuario
+app.put('/api/users/:id', (req, res) => {
+  const userId = req.params.id;
+  const updatedUser = req.body; // Datos enviados desde el frontend
+
+  // Lógica para actualizar el usuario en la base de datos
+  const query = `
+    UPDATE users 
+    SET firstname = ?, lastname = ?, job = ?, job_grade = ?
+    WHERE id = ?;
+  `;
+  const params = [
+    updatedUser.firstname, 
+    updatedUser.lastname, 
+    updatedUser.job, 
+    updatedUser.job_grade, 
+    userId
+  ];
+
+  db.query(query, params, (err, result) => {
+    if (err) {
+      return res.status(500).send({ message: 'Error al actualizar el usuario' });
+    }
+    res.status(200).send({ message: 'Usuario actualizado correctamente' });
+  });
+});
 
 
 

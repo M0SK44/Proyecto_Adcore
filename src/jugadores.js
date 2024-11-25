@@ -1,424 +1,315 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Para la navegación entre páginas
 
 function Jugadores() {
   const navigate = useNavigate();
+  const [users, setUsers] = useState([]); // Estado para almacenar los usuarios
+  const [filteredUsers, setFilteredUsers] = useState([]); // Estado para almacenar los usuarios filtrados
+  const [showModal, setShowModal] = useState(false); // Estado para controlar la visibilidad del modal
+  const [userToEdit, setUserToEdit] = useState(null); // Usuario que se va a editar
+  const [userToDelete, setUserToDelete] = useState(null); // Usuario que se va a eliminar
+  const [searchQuery, setSearchQuery] = useState(""); // Estado para el texto de búsqueda
+  const [successMessage, setSuccessMessage] = useState(""); // Mensaje de éxito para operaciones
 
-  // Estado para almacenar los datos de los jugadores
-  const [jugadores, setJugadores] = useState([
-    {
-      id: 1,
-      licencia: "ABC123",
-      nombre: "Juan",
-      apellido: "Pérez",
-      trabajo: "Police",
-      grado: "0",
-      grupo: "admin",
-    },
-    {
-      id: 2,
-      licencia: "XYZ456",
-      nombre: "Ana",
-      apellido: "Gómez",
-      trabajo: "Ambulance",
-      grado: "1",
-      grupo: "user",
-    },
-    {
-      id: 3,
-      licencia: "DEF789",
-      nombre: "Bastian",
-      apellido: "Contreras",
-      trabajo: "Mechanic",
-      grado: "5",
-      grupo: "mod",
-    },
-    // Agrega más jugadores aquí según sea necesario
-  ]);
+  useEffect(() => {
+    fetch("http://localhost:3002/api/users") // Asegúrate de usar la URL correcta
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error al obtener los datos: " + response.statusText);
+        }
+        return response.json(); // Parsear la respuesta a JSON
+      })
+      .then((data) => {
+        setUsers(data); // Almacenar los datos de los usuarios en el estado
+        setFilteredUsers(data); // Inicializar los usuarios filtrados
+      })
+      .catch((error) => console.error("Error al obtener los datos:", error));
+  }, []); // Solo se ejecuta una vez cuando el componente se monta
 
-  const [filtro, setFiltro] = useState(""); // Estado para el filtro de búsqueda
-  const [selectedJugador, setSelectedJugador] = useState(null); // Estado para almacenar el jugador seleccionado
-  const [successMessage, setSuccessMessage] = useState(""); // Estado para el mensaje de éxito
-  const [confirmDelete, setConfirmDelete] = useState(null); // Estado para mostrar el cuadro de confirmación de borrado
-
-  // Función para manejar la selección de un jugador de la tabla
-  const handleSelectJugador = (jugador) => {
-    setSelectedJugador(jugador);
-  };
-  // Función para manejar el botón de volver al panel
-  const handleVolverPanel = () => {
-    navigate("/index_admin"); // Redirige al panel principal
+  const handleEdit = (user) => {
+    setUserToEdit(user); // Establecer el usuario a editar
+    setShowModal(true); // Mostrar el modal
   };
 
-  // Función para manejar el envío de los cambios del jugador
-  const handleModificarJugador = (e) => {
-    e.preventDefault();
-    if (selectedJugador) {
-      const updatedJugadores = jugadores.map((jugador) =>
-        jugador.id === selectedJugador.id ? selectedJugador : jugador
-      );
-      setJugadores(updatedJugadores);
-      setSuccessMessage("Datos del jugador modificados correctamente.");
+  const handleChange = (e) => {
+    setUserToEdit({
+      ...userToEdit,
+      [e.target.name]: e.target.value,
+    }); 
+  };
+
+ 
+  const VolverAtras = () => {
+    navigate("/index_admin");
+  };
+  const NoGuardar = () => {
+    setUserToEdit(null); // Limpiar el usuario que se está editando
+    setShowModal(false);  // Cerrar el modal
+  };
+
+  const handleSave = () => {
+    if (userToEdit) {
+      // Llamar al backend para actualizar el usuario
+      fetch(`http://localhost:3002/api/users/${userToEdit.id}`, {
+        method: "PUT", // Usamos PUT para actualizar el recurso
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userToEdit),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Error al actualizar el usuario");
+          }
+          return response.json();
+        })
+        .then(() => {
+          // Mostrar el mensaje de éxito
+          setSuccessMessage(`Modificaste con éxito a ${userToEdit.firstname} ${userToEdit.lastname}`);
+          // Actualizar la lista de usuarios con el usuario modificado
+          setUsers(users.map((user) => (user.id === userToEdit.id ? userToEdit : user)));
+         
+        })
+        .catch((error) => {
+          console.error("Error al actualizar el usuario:", error);
+        });
+    }
+    setShowModal(false); // Cerrar el modal después de guardar
+  };
+
+  const handleDelete = (user) => {
+    setUserToDelete(user); // Establecer el usuario a eliminar
+  };
+
+  const confirmDelete = () => {
+    if (userToDelete) {
+      fetch(`http://localhost:3002/api/users/${userToDelete.id}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Error al eliminar el usuario");
+          }
+          return response.json();
+        })
+        .then(() => {
+          // Mostrar el mensaje de éxito
+          setSuccessMessage(`Eliminaste con éxito a ${userToDelete.firstname} ${userToDelete.lastname}`);
+          // Eliminar el usuario de la lista local
+          setUsers(users.filter((user) => user.id !== userToDelete.id));
+          setUserToDelete(null); // Limpiar el usuario a eliminar
+        })
+        .catch((error) => {
+          console.error("Error al eliminar el usuario:", error);
+        });
     }
   };
 
-  // Función para manejar el botón de retroceso
-  const handleAtras = () => {
-    setSelectedJugador(null); // Restablece el estado de jugador seleccionado a null
-    setSuccessMessage(""); // Limpia el mensaje de éxito
-    setFiltro(""); // Limpia el filtro
+  const cancelDelete = () => {
+    setUserToDelete(null); // Cancelar la eliminación
   };
 
-  // Función para activar el cuadro de confirmación de borrado
-  const handleConfirmarBorrar = (jugador) => {
-    setConfirmDelete(jugador);
-  };
+  // Filtrar usuarios según la búsqueda
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
 
-  // Función para borrar un jugador
-  const handleBorrarJugador = () => {
-    if (confirmDelete) {
-      const updatedJugadores = jugadores.filter(
-        (jugador) => jugador.id !== confirmDelete.id
-      );
-      setJugadores(updatedJugadores);
-      setSuccessMessage("Jugador borrado correctamente.");
-      setConfirmDelete(null); // Resetea la confirmación
-    }
+    const filtered = users.filter((user) =>
+      Object.values(user)
+        .join(" ")
+        .toLowerCase()
+        .includes(query)
+    );
+    setFilteredUsers(filtered);
   };
-
-  // Función para cancelar el borrado
-  const handleCancelarBorrar = () => {
-    setConfirmDelete(null); // Cierra el cuadro de confirmación sin borrar
-  };
-
-  // Función para filtrar jugadores por cualquiera de los campos
-  const handleFiltro = (e) => {
-    setFiltro(e.target.value);
-  };
-
-  // Filtrar jugadores por cualquier campo (licencia, nombre, apellido, trabajo, grado, grupo)
-  const jugadoresFiltrados = jugadores.filter(
-    (jugador) =>
-      jugador.licencia.toLowerCase().includes(filtro.toLowerCase()) ||
-      jugador.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
-      jugador.apellido.toLowerCase().includes(filtro.toLowerCase()) ||
-      jugador.trabajo.toLowerCase().includes(filtro.toLowerCase()) ||
-      jugador.grado.toLowerCase().includes(filtro.toLowerCase()) ||
-      jugador.grupo.toLowerCase().includes(filtro.toLowerCase())
-  );
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-slate-950 to-slate-900">
-      <div className="w-full max-w-3xl bg-white p-8 rounded-lg shadow-xl">
-        <h2 className="text-2xl font-semibold text-center text-slate-900 mb-6">
-          Modificar Jugador
+      <div className="overflow-x-auto bg-white p-6 rounded-xl shadow-lg w-full max-w-6xl"> {/* Aumentamos el ancho máximo */}
+        {/* Título centrado */}
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
+          JUGADORES ACTUALES
         </h2>
 
-        {/* Input de filtro */}
-        {!selectedJugador && (
-          <div className="mb-6">
-            <label
-              htmlFor="filtro"
-              className="block text-sm font-medium text-slate-700 mb-2"
-            >
-              Buscar Jugador
-            </label>
-            <input
-              type="text"
-              id="filtro"
-              value={filtro}
-              onChange={handleFiltro}
-              className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              placeholder="Busca por cualquier campo (licencia, nombre, apellido, etc.)"
-            />
+        {/* Mensaje de éxito */}
+        {successMessage && (
+          <div className="mb-4 p-4 text-green-700 bg-green-100 border border-green-300 rounded-md">
+            {successMessage}
           </div>
         )}
 
-        {/* Tabla de jugadores */}
-        {!selectedJugador && (
-          <div className="mb-6 overflow-x-auto">
-            <table className="min-w-full table-auto">
-              <thead>
-                <tr className="bg-gray-100 text-left">
-                  <th className="px-6 py-3 text-sm font-medium text-gray-500">
-                    Licencia
-                  </th>
-                  <th className="px-6 py-3 text-sm font-medium text-gray-500">
-                    Nombre
-                  </th>
-                  <th className="px-6 py-3 text-sm font-medium text-gray-500">
-                    Apellido
-                  </th>
-                  <th className="px-6 py-3 text-sm font-medium text-gray-500">
-                    Trabajo
-                  </th>
-                  <th className="px-6 py-3 text-sm font-medium text-gray-500">
-                    Grado
-                  </th>
-                  <th className="px-6 py-3 text-sm font-medium text-gray-500">
-                    Grupo
-                  </th>
-                  <th className="px-6 py-3 text-sm font-medium text-gray-500">
-                    Acción
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {jugadoresFiltrados.map((jugador) => (
-                  <tr key={jugador.id} className="border-b">
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {jugador.licencia}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {jugador.nombre}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {jugador.apellido}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {jugador.trabajo}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {jugador.grado}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {jugador.grupo}
-                    </td>
-                    <td className="px-6 py-4 text-sm flex justify-end gap-2">
-                      <button
-                        className="bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600"
-                        onClick={() => handleSelectJugador(jugador)}
-                      >
-                        Modificar
-                      </button>
-                      <button
-                        className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
-                        onClick={() => handleConfirmarBorrar(jugador)}
-                      >
-                        Borrar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+        {/* Campo de búsqueda */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Buscar por nombre, apellido, trabajo, licencia..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+        </div>
 
-              
-            </table>
+        {/* Tabla de Usuarios */}
+        <table className="min-w-full table-auto rounded-lg">
+          <thead className="bg-gray-100 rounded-t-lg">
+            <tr>
+              <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">Licencia</th>
+              <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">Nombre</th>
+              <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">Apellido</th>
+              <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">Trabajo</th>
+              <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">Grado</th>
+              <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">Grupo</th>
+              <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">Acciones</th>
+            </tr>
+          </thead>
+          
+          <tbody>
+            
+            {/* Mostrar los datos de los usuarios filtrados */}
+            {filteredUsers.map((user) => (
+              <tr key={user.id}>
+                <td className="px-6 py-3 border-b text-sm text-gray-600">{user.identifier}</td>
+                <td className="px-6 py-3 border-b text-sm text-gray-600">{user.firstname}</td>
+                <td className="px-6 py-3 border-b text-sm text-gray-600">{user.lastname}</td>
+                <td className="px-6 py-3 border-b text-sm text-gray-600">{user.job}</td>
+                <td className="px-6 py-3 border-b text-sm text-gray-600">{user.job_grade}</td>
+                <td className="px-6 py-3 border-b text-sm text-gray-600">{user.group}</td>
+                <td className="px-6 py-3 border-b text-sm text-gray-600">
+                  <div className="flex justify-start space-x-2">
+                    <button
+                      onClick={() => handleEdit(user)}
+                      className="bg-emerald-500 text-white px-4 py-2 rounded-md hover:bg-emerald-600"
+                    >
+                      Modificar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(user)}
+                      className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+                
+              </tr>
+            ))}
+            
+          </tbody>
+          
+        </table>
+        <button
+  type="button"
+  onClick={VolverAtras}
+  className="w-auto mx-auto mt-4 bg-emerald-500 text-white px-6 py-2 rounded-md hover:bg-emerald-600 block"
+>
+  Atras
+</button>
+
+      </div>
+
+      {/* Modal de Confirmación para Eliminar */}
+      {userToDelete && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">¿Estás seguro de eliminar a {userToDelete.firstname} {userToDelete.lastname}?</h2>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={confirmDelete}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+              >
+                Eliminar
+              </button>
+              <button
+                onClick={cancelDelete}
+                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para Editar Usuario */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Editar Usuario</h2>
+            <form>
+              <div className="mb-4">
+                <label htmlFor="firstname" className="block text-gray-700">Nombre</label>
+                <input
+                  type="text"
+                  id="firstname"
+                  name="firstname"
+                  value={userToEdit.firstname}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="lastname" className="block text-gray-700">Apellido</label>
+                <input
+                  type="text"
+                  id="lastname"
+                  name="lastname"
+                  value={userToEdit.lastname}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="job" className="block text-gray-700">Trabajo</label>
+                <input
+                  type="text"
+                  id="job"
+                  name="job"
+                  value={userToEdit.job}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="job_grade" className="block text-gray-700">Grado</label>
+                <input
+                  type="number"
+                  id="job_grade"
+                  name="job_grade"
+                  value={userToEdit.job_grade}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="group" className="block text-gray-700">Grupo</label>
+                <input
+                  type="text"
+                  id="group"
+                  name="group"
+                  value={userToEdit.group}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleSave}
+                className="w-full bg-emerald-500 text-white px-4 py-2 rounded-md hover:bg-emerald-600"
+              >
+                Guardar
+              </button>
+              <button
+                type="button"
+                onClick={NoGuardar}
+                className="w-full bg-red-500 mt-4 text-white px-4 py-2 rounded-md hover:bg-red-600"
+              >
+              Volver
+              </button>
+            </form>
             
           </div>
-          
-        )}
-        {/* Formulario de modificación */}
-        {selectedJugador && (
-          <form onSubmit={handleModificarJugador} className="space-y-6">
-            {/* Licencia de Rockstar */}
-            <div>
-              <label
-                htmlFor="licencia"
-                className="block text-sm font-medium text-slate-700 mb-2"
-              >
-                Licencia de Rockstar
-              </label>
-              <input
-                type="text"
-                id="licencia"
-                name="licencia"
-                value={selectedJugador.licencia}
-                onChange={(e) =>
-                  setSelectedJugador({
-                    ...selectedJugador,
-                    licencia: e.target.value,
-                  })
-                }
-                required
-                className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
-
-            {/* Nombre */}
-            <div>
-              <label
-                htmlFor="nombre"
-                className="block text-sm font-medium text-slate-700 mb-2"
-              >
-                Nombre
-              </label>
-              <input
-                type="text"
-                id="nombre"
-                name="nombre"
-                value={selectedJugador.nombre}
-                onChange={(e) =>
-                  setSelectedJugador({
-                    ...selectedJugador,
-                    nombre: e.target.value,
-                  })
-                }
-                required
-                className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
-
-            {/* Apellido */}
-            <div>
-              <label
-                htmlFor="apellido"
-                className="block text-sm font-medium text-slate-700 mb-2"
-              >
-                Apellido
-              </label>
-              <input
-                type="text"
-                id="apellido"
-                name="apellido"
-                value={selectedJugador.apellido}
-                onChange={(e) =>
-                  setSelectedJugador({
-                    ...selectedJugador,
-                    apellido: e.target.value,
-                  })
-                }
-                required
-                className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
-
-            {/* Trabajo */}
-            <div>
-              <label
-                htmlFor="trabajo"
-                className="block text-sm font-medium text-slate-700 mb-2"
-              >
-                Trabajo
-              </label>
-              <input
-                type="text"
-                id="trabajo"
-                name="trabajo"
-                value={selectedJugador.trabajo}
-                onChange={(e) =>
-                  setSelectedJugador({
-                    ...selectedJugador,
-                    trabajo: e.target.value,
-                  })
-                }
-                required
-                className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
-
-            {/* Grado */}
-            <div>
-              <label
-                htmlFor="grado"
-                className="block text-sm font-medium text-slate-700 mb-2"
-              >
-                Grado
-              </label>
-              <input
-                type="text"
-                id="grado"
-                name="grado"
-                value={selectedJugador.grado}
-                onChange={(e) =>
-                  setSelectedJugador({
-                    ...selectedJugador,
-                    grado: e.target.value,
-                  })
-                }
-                required
-                className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
-
-            {/* Grupo */}
-            <div>
-              <label
-                htmlFor="grupo"
-                className="block text-sm font-medium text-slate-700 mb-2"
-              >
-                Grupo
-              </label>
-              <input
-                type="text"
-                id="grupo"
-                name="grupo"
-                value={selectedJugador.grupo}
-                onChange={(e) =>
-                  setSelectedJugador({
-                    ...selectedJugador,
-                    grupo: e.target.value,
-                  })
-                }
-                required
-                className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
-
-            {/* Mensaje de éxito */}
-            {successMessage && (
-              <div className="bg-green-100 text-green-800 p-4 rounded-lg">
-                {successMessage}
-              </div>
-            )}
-
-            <div className="flex justify-between">
-             
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  className="bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600"
-                >
-                  Modificar Jugador
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleConfirmarBorrar(selectedJugador)}
-                  className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
-                >
-                  Borrar Jugador
-                </button>
-              </div>
-            </div>
-          </form>
-        )}
-
-        {/* Confirmación de borrar */}
-        {confirmDelete && (
-          <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
-            <div className="bg-white p-8 rounded-lg shadow-xl w-96">
-              <h3 className="text-xl font-semibold text-slate-900 mb-4">
-                ¿Estás seguro de que deseas borrar a {confirmDelete.nombre}{" "}
-                {confirmDelete.apellido}?
-              </h3>
-              <div className="flex justify-between">
-                <button
-                  onClick={handleBorrarJugador}
-                  className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
-                >
-                  Sí, hazlo
-                </button>
-                <button
-                  onClick={handleCancelarBorrar}
-                  className="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600"
-                >
-                  No, salir
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        {/* Botón Volver al Panel */}
-        <div className="mt-6">
-                <button
-                  onClick={handleVolverPanel}
-                  className="bg-emerald-500 text-white py-2 px-4 rounded-lg hover:bg-emerald-600"
-                >
-                  Volver al Panel
-                </button>
-              </div>
-      </div>
-      
+        </div>
+      )}
     </div>
   );
 }

@@ -61,9 +61,7 @@ function Administradores() {
     e.preventDefault();
   
     // Validación de campos requeridos
-    const { nombre, usuario, mail, grupo, activo, contraseña } = selectedAdmin;
-  
-    // Verificar campos obligatorios
+    const { nombre, usuario, mail, grupo, activo } = selectedAdmin;
     if (!nombre || !usuario || !mail || !grupo || activo === undefined) {
       setError("Todos los campos son obligatorios excepto la contraseña.");
       return;
@@ -71,17 +69,15 @@ function Administradores() {
   
     try {
       const { id, ...adminData } = selectedAdmin;
+      console.log("Datos enviados:", adminData); // Muestra los datos enviados
   
-      // Enviar los datos al backend, asegurando que 'activo' sea un número
-      const response = await axios.put(`/api/administradores/${id}`, {
+      // Enviar los datos con el estado de 'activo' asegurado como un número (1 o 0)
+      await axios.put(`/api/administradores/${id}`, {
         ...adminData,
-        activo: adminData.activo === "1" || adminData.activo === 1 ? 1 : 0, // Normaliza activo
-        contraseña: contraseña || undefined, // Si no hay contraseña, no la envía
+        activo: adminData.activo === "1" ? 1 : 0,  // Asegura que 'activo' sea un número (1 o 0)
       });
   
-      console.log("Respuesta del servidor:", response.data);
-  
-      // Actualizar el estado con el administrador modificado
+      // Actualiza el estado con los datos del administrador modificado
       setAdministradores((prev) =>
         prev.map((admin) => (admin.id === id ? selectedAdmin : admin))
       );
@@ -90,12 +86,9 @@ function Administradores() {
       setSuccessMessage("Administrador actualizado correctamente.");
     } catch (err) {
       console.error("Error en la solicitud PUT:", err.response?.data || err.message);
-      setError(
-        err.response?.data?.message || "Error al intentar actualizar el administrador."
-      );
+      setError("Error al intentar actualizar el administrador.");
     }
   };
-  
   
   
 
